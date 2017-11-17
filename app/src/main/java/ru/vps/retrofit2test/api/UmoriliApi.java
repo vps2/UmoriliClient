@@ -10,6 +10,9 @@ import ru.vps.retrofit2test.model.Post;
 
 public interface UmoriliApi
 {
-   @GET("/api/get")
-   Call<List<Post>> getPosts(@Query("name") String name, @Query("num") int num);
+   @GET("/api/random")
+   Call<List<Post>> getRandomPosts();
+
+   @GET("/api/random")
+   Call<List<Post>> getRandomPosts(@Query("num") int num);
 }

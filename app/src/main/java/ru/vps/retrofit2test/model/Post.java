@@ -3,7 +3,9 @@ package ru.vps.retrofit2test.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Post
+import java.io.Serializable;
+
+public class Post implements Serializable
 {
    public String getSite()
    {
@@ -54,6 +56,21 @@ public class Post
    {
       this.elementPureHtml = elementPureHtml;
    }
+
+   @Override
+   public String toString()
+   {
+      return "Post{" +
+             "site='" + site + '\'' +
+             ", name='" + name + '\'' +
+             ", desc='" + desc + '\'' +
+             ", link='" + link + '\'' +
+             ", elementPureHtml='" + elementPureHtml + '\'' +
+             '}';
+   }
+
+
+   private static final long serialVersionUId = 1L;
 
    @SerializedName("site")
    @Expose
