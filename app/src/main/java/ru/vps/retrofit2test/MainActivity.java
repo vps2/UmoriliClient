@@ -3,17 +3,12 @@ package ru.vps.retrofit2test;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,33 +19,34 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.vps.retrofit2test.model.Post;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements ClickablePostRecyclerAdapter.OnItemClickListener
 {
+   @Override
+   public void onItemClick(View view, int position)
+   {
+      Post post = posts.get(position);
+      String postUrl = App.getUmoriliUrl() + post.getLink();
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
+      startActivity(intent);
+   }
+
    @Override
    protected void onCreate(Bundle savedInstanceState)
    {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      postsView = (ListView) findViewById(R.id.posts);
-      postsView.setAdapter(new PostsViewAdapter(posts));
-      postsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-         @Override
-         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-         {
-            Post post = posts.get(position);
-            String postUrl = App.getUmoriliUrl() + post.getLink();
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
-            startActivity(intent);
-         }
-      });
+      postsView = (RecyclerView) findViewById(R.id.posts);
+      postsView.setHasFixedSize(true);
+      postsView.setLayoutManager(new LinearLayoutManager(this));
+      postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
 
       final Button btnGetPosts = (Button) findViewById(R.id.btnGetPosts);
       btnGetPosts.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(final View v)
          {
-            App.getUmoriliApi().getRandomPosts().enqueue(new Callback<List<Post>>() {
+            App.getUmoriliApi().getRandomPosts(NUMBER_OF__POSTS).enqueue(new Callback<List<Post>>() {
                @Override
                public void onResponse(Call<List<Post>> call, Response<List<Post>> response)
                {
@@ -65,7 +61,7 @@ public class MainActivity extends AppCompatActivity
                      posts.clear();
                      posts.addAll(body);
 
-                     postsView.setAdapter(new PostsViewAdapter(posts));
+                     postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, MainActivity.this));
                   }
                }
 
@@ -84,6 +80,8 @@ public class MainActivity extends AppCompatActivity
                }
             });
          }
+
+         private static final int NUMBER_OF__POSTS = 15;
       });
    }
 
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity
       super.onRestoreInstanceState(savedInstanceState);
 
       posts = (List<Post>) savedInstanceState.getSerializable(EXTRA_POSTS);
-      postsView.setAdapter(new PostsViewAdapter(posts));
+      postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
    }
 
    private static final String EXTRA_POSTS = "ru.vps.retrofit2test.extra.posts";
@@ -109,77 +107,5 @@ public class MainActivity extends AppCompatActivity
    //
    private List<Post> posts = new ArrayList<>();
    //
-   private ListView postsView;
-   private PostsViewAdapter postsViewAdapter;
-
-
-
-   private class PostsViewAdapter extends BaseAdapter
-   {
-      public PostsViewAdapter(@NonNull List<Post> posts)
-      {
-         this.posts = posts;
-      }
-
-      @Override
-      public int getCount()
-      {
-         return posts.size();
-      }
-
-      @Override
-      public Object getItem(int position)
-      {
-         return posts.get(position);
-      }
-
-      @Override
-      public long getItemId(int position)
-      {
-         return position;
-      }
-
-      @Override
-      public View getView(int position, View convertView, ViewGroup parent)
-      {
-         PostItemViewHolder postItemViewHolder;
-
-         if (convertView == null)
-         {
-            convertView = getLayoutInflater().inflate(R.layout.post_item, parent, false);
-            postItemViewHolder = new PostItemViewHolder(convertView);
-            convertView.setTag(postItemViewHolder);
-         }
-         else
-         {
-            postItemViewHolder = (PostItemViewHolder) convertView.getTag();
-         }
-
-         Post post = (Post) getItem(position);
-
-         TextView textView = postItemViewHolder.getTextView();
-         textView.setText(Html.fromHtml(post.getElementPureHtml()));
-
-         return convertView;
-      }
-
-      private List<Post> posts;
-
-
-
-      private class PostItemViewHolder
-      {
-         PostItemViewHolder(View view)
-         {
-            textView = (TextView) view.findViewById(R.id.text);
-         }
-
-         TextView getTextView()
-         {
-            return textView;
-         }
-
-         final TextView textView;
-      }
-   }
+   private RecyclerView postsView;
 }

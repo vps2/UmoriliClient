@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="5dp"
+            card_view:cardElevation="3dp"
+            card_view:contentPadding="3dp"
+            android:foreground="?android:attr/selectableItemBackground">
+
+        <TextView
+                android:id="@+id/text"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                xmlns:tools="http://schemas.android.com/tools">
+                android:layout_height="wrap_content"
+                tools:text="POST TEXT" />
 
-   <TextView
-           android:id="@+id/text"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           tools:text="POST TEXT"/>
+    </android.support.v7.widget.CardView>
 
-</RelativeLayout>
+</LinearLayout>

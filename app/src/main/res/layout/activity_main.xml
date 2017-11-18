@@ -14,14 +14,11 @@
            android:layout_marginTop="8dp"
            android:layout_gravity="center_horizontal"/>
 
-
-   <ListView
+   <android.support.v7.widget.RecyclerView
            android:id="@+id/posts"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
-           android:layout_margin="8dp">
-
-   </ListView>
+           android:layout_margin="8dp" />
 
 </LinearLayout>
 
