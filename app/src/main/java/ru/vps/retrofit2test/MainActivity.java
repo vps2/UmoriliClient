@@ -19,93 +19,82 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.vps.retrofit2test.model.Post;
 
-public class MainActivity extends AppCompatActivity implements ClickablePostRecyclerAdapter.OnItemClickListener
-{
-   @Override
-   public void onItemClick(View view, int position)
-   {
-      Post post = posts.get(position);
-      String postUrl = App.getUmoriliUrl() + post.getLink();
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
-      startActivity(intent);
-   }
+public class MainActivity extends AppCompatActivity implements ClickablePostRecyclerAdapter.OnItemClickListener {
+    private static final String EXTRA_POSTS = "ru.vps.retrofit2test.extra.posts";
+    private static final int MESSAGE_SHOW_TIME = 10000;
+    //
+    private List<Post> posts = new ArrayList<>();
+    //
+    private RecyclerView postsView;
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState)
-   {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
+    @Override
+    public void onItemClick(View view, int position) {
+        Post post = posts.get(position);
+        String postUrl = App.getUmoriliUrl() + post.getLink();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
+        startActivity(intent);
+    }
 
-      postsView = (RecyclerView) findViewById(R.id.posts);
-      postsView.setHasFixedSize(true);
-      postsView.setLayoutManager(new LinearLayoutManager(this));
-      postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-      final Button btnGetPosts = (Button) findViewById(R.id.btnGetPosts);
-      btnGetPosts.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(final View v)
-         {
-            App.getUmoriliApi().getRandomPosts(NUMBER_OF__POSTS).enqueue(new Callback<List<Post>>() {
-               @Override
-               public void onResponse(Call<List<Post>> call, Response<List<Post>> response)
-               {
-                  if(!response.isSuccessful())
-                  {
-                     return;
-                  }
+        postsView = (RecyclerView) findViewById(R.id.posts);
+        postsView.setHasFixedSize(true);
+        postsView.setLayoutManager(new LinearLayoutManager(this));
+        postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
 
-                  List<Post> body = response.body();
-                  if(body != null)
-                  {
-                     posts.clear();
-                     posts.addAll(body);
+        final Button btnGetPosts = (Button) findViewById(R.id.btnGetPosts);
+        btnGetPosts.setOnClickListener(new View.OnClickListener() {
+            private static final int NUMBER_OF__POSTS = 15;
 
-                     postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, MainActivity.this));
-                  }
-               }
+            @Override
+            public void onClick(final View v) {
+                App.getUmoriliApi().getRandomPosts(NUMBER_OF__POSTS).enqueue(new Callback<List<Post>>() {
+                    @Override
+                    public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                        if (!response.isSuccessful()) {
+                            return;
+                        }
 
-               @Override
-               public void onFailure(Call<List<Post>> call, Throwable t)
-               {
-                  final Snackbar snackbar = Snackbar.make(v, t.getLocalizedMessage(), MESSAGE_SHOW_TIME);
-                  snackbar.setAction(R.string.ok, new View.OnClickListener() {
-                     @Override
-                     public void onClick(View v)
-                     {
-                        snackbar.dismiss();
-                     }
-                  });
-                  snackbar.show();
-               }
-            });
-         }
+                        List<Post> body = response.body();
+                        if (body != null) {
+                            posts.clear();
+                            posts.addAll(body);
 
-         private static final int NUMBER_OF__POSTS = 15;
-      });
-   }
+                            postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, MainActivity.this));
+                        }
+                    }
 
-   @Override
-   protected void onSaveInstanceState(Bundle outState)
-   {
-      super.onSaveInstanceState(outState);
+                    @Override
+                    public void onFailure(Call<List<Post>> call, Throwable t) {
+                        final Snackbar snackbar = Snackbar.make(v, t.getLocalizedMessage(), MESSAGE_SHOW_TIME);
+                        snackbar.setAction(R.string.ok, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                snackbar.dismiss();
+                            }
+                        });
+                        snackbar.show();
+                    }
+                });
+            }
+        });
+    }
 
-      outState.putSerializable(EXTRA_POSTS, (Serializable) posts);
-   }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-   @Override
-   protected void onRestoreInstanceState(Bundle savedInstanceState)
-   {
-      super.onRestoreInstanceState(savedInstanceState);
+        outState.putSerializable(EXTRA_POSTS, (Serializable) posts);
+    }
 
-      posts = (List<Post>) savedInstanceState.getSerializable(EXTRA_POSTS);
-      postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
-   }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-   private static final String EXTRA_POSTS = "ru.vps.retrofit2test.extra.posts";
-   private static final int MESSAGE_SHOW_TIME = 10000;
-   //
-   private List<Post> posts = new ArrayList<>();
-   //
-   private RecyclerView postsView;
+        posts = (List<Post>) savedInstanceState.getSerializable(EXTRA_POSTS);
+        postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
+    }
 }

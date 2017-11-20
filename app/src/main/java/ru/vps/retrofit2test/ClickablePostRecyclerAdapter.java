@@ -7,44 +7,37 @@ import java.util.List;
 
 import ru.vps.retrofit2test.model.Post;
 
-public class ClickablePostRecyclerAdapter extends PostsRecyclerAdapter implements View.OnClickListener
-{
-   public ClickablePostRecyclerAdapter(List<Post> posts, OnItemClickListener listener)
-   {
-      super(posts);
+public class ClickablePostRecyclerAdapter extends PostsRecyclerAdapter implements View.OnClickListener {
+    private OnItemClickListener listener;
 
-      this.listener = listener;
-   }
+    public ClickablePostRecyclerAdapter(List<Post> posts, OnItemClickListener listener) {
+        super(posts);
 
-   @Override
-   public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-   {
-      PostViewHolder postViewHolder = super.onCreateViewHolder(parent, viewType);
-      postViewHolder.itemView.setOnClickListener(this);
+        this.listener = listener;
+    }
 
-      return postViewHolder;
-   }
+    @Override
+    public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        PostViewHolder postViewHolder = super.onCreateViewHolder(parent, viewType);
+        postViewHolder.itemView.setOnClickListener(this);
 
-   @Override
-   public void onBindViewHolder(PostViewHolder holder, int position)
-   {
-      super.onBindViewHolder(holder, position);
-      holder.itemView.setTag(position);
-   }
+        return postViewHolder;
+    }
 
-   @Override
-   public void onClick(View v)
-   {
-      Integer position = (Integer) v.getTag();
-      listener.onItemClick(v, position);
-   }
+    @Override
+    public void onBindViewHolder(PostViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        holder.itemView.setTag(position);
+    }
 
-   private OnItemClickListener listener;
+    @Override
+    public void onClick(View v) {
+        Integer position = (Integer) v.getTag();
+        listener.onItemClick(v, position);
+    }
 
 
-
-   public interface OnItemClickListener
-   {
-      void onItemClick(View view, int position);
-   }
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
 }

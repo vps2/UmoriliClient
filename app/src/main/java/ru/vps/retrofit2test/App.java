@@ -10,30 +10,26 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.vps.retrofit2test.api.UmoriliApi;
 
 
-public class App extends Application
-{
-   public static UmoriliApi getUmoriliApi()
-   {
-      return umoriliApi;
-   }
+public class App extends Application {
+    private static UmoriliApi umoriliApi;
+    private static String UMORILI_URL = "http://umorili.herokuapp.com";
 
-   public static String getUmoriliUrl()
-   {
-      return UMORILI_URL;
-   }
+    public static UmoriliApi getUmoriliApi() {
+        return umoriliApi;
+    }
 
-   @Override
-   public void onCreate()
-   {
-      super.onCreate();
+    public static String getUmoriliUrl() {
+        return UMORILI_URL;
+    }
 
-      Gson gson = new GsonBuilder().setLenient().create();
-      Retrofit retrofit = new Retrofit.Builder().baseUrl(UMORILI_URL)
-                                                .addConverterFactory(GsonConverterFactory.create(gson))
-                                                .build();
-      umoriliApi = retrofit.create(UmoriliApi.class);
-   }
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-   private static UmoriliApi umoriliApi;
-   private static String UMORILI_URL = "http://umorili.herokuapp.com";
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(UMORILI_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        umoriliApi = retrofit.create(UmoriliApi.class);
+    }
 }

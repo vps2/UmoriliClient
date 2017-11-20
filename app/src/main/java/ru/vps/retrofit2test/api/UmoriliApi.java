@@ -8,11 +8,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import ru.vps.retrofit2test.model.Post;
 
-public interface UmoriliApi
-{
-   @GET("/api/random")
-   Call<List<Post>> getRandomPosts();
+public interface UmoriliApi {
+    @GET("/api/random")
+    Call<List<Post>> getRandomPosts();
 
-   @GET("/api/random")
-   Call<List<Post>> getRandomPosts(@Query("num") int num);
+    @GET("/api/random")
+    Call<List<Post>> getRandomPosts(@Query("num") int num);
 }

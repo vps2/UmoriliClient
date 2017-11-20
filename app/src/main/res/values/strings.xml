@@ -1,5 +1,5 @@
 <resources>
-   <string name="app_name">Retrofit2Test</string>
-   <string name="ok">OK</string>
+    <string name="app_name">Retrofit2Test</string>
+    <string name="ok">OK</string>
     <string name="get_posts">Get posts</string>
 </resources>

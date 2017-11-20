@@ -12,54 +12,46 @@ import java.util.List;
 
 import ru.vps.retrofit2test.model.Post;
 
-public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdapter.PostViewHolder>
-{
-   public PostsRecyclerAdapter(List<Post> posts)
-   {
-      this.posts = posts;
-   }
+public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdapter.PostViewHolder> {
+    private List<Post> posts;
 
-   @Override
-   public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-   {
-      LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-      View postView = layoutInflater.inflate(R.layout.post_item, parent, false);
+    public PostsRecyclerAdapter(List<Post> posts) {
+        this.posts = posts;
+    }
 
-      return new PostViewHolder(postView);
-   }
+    @Override
+    public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View postView = layoutInflater.inflate(R.layout.post_item, parent, false);
 
-   @Override
-   public void onBindViewHolder(PostViewHolder holder, int position)
-   {
-      if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-      {
-         holder.textView.setText(Html.fromHtml(posts.get(position).getElementPureHtml(), Html.FROM_HTML_MODE_LEGACY));
-      }
-      else
-      {
-         holder.textView.setText(Html.fromHtml(posts.get(position).getElementPureHtml()));
-      }
-   }
+        return new PostViewHolder(postView);
+    }
 
-   @Override
-   public int getItemCount()
-   {
-      return posts.size();
-   }
+    @Override
+    public void onBindViewHolder(PostViewHolder holder, int position) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml(), Html.FROM_HTML_MODE_LEGACY).toString());
+        } else {
+            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml()).toString());
+        }
+    }
 
-   private List<Post> posts;
+    @Override
+    public int getItemCount() {
+        return posts.size();
+    }
 
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textView;
 
+        public PostViewHolder(View view) {
+            super(view);
 
-   public static class PostViewHolder extends RecyclerView.ViewHolder
-   {
-      public PostViewHolder(View view)
-      {
-         super(view);
+            textView = (TextView) view.findViewById(R.id.text);
+        }
 
-         textView = (TextView) view.findViewById(R.id.text);
-      }
-
-      public final TextView textView;
-   }
+        public void setText(String text) {
+            textView.setText(text);
+        }
+    }
 }
