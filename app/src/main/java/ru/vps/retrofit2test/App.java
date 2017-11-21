@@ -9,7 +9,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.vps.retrofit2test.api.UmoriliApi;
 
-
 public class App extends Application {
     private static UmoriliApi umoriliApi;
     private static String UMORILI_URL = "http://umorili.herokuapp.com";
