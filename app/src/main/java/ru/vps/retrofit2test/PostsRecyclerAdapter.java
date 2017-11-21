@@ -30,7 +30,8 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml(), Html.FROM_HTML_MODE_LEGACY).toString());
+            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml(),
+                                         Html.FROM_HTML_MODE_LEGACY).toString());
         } else {
             holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml()).toString());
         }

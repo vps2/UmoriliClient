@@ -116,9 +116,12 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
     @Override
     public void onItemClick(View view, int position) {
         Post post = posts.get(position);
-        String postUrl = App.getUmoriliUrl() + post.getLink();
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
-        startActivity(intent);
+        String link = post.getLink();
+        if (link != null) {
+            String postUrl = App.getUmoriliUrl() + link;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
+            startActivity(intent);
+        }
     }
 
     @Override
