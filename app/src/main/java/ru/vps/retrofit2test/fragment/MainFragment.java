@@ -34,6 +34,8 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
     private List<Post> posts = new ArrayList<>();
     //
     private RecyclerView postsView;
+    private Button getPosts;
+    private ProgressBar loadingProgress;
     //
     private Call<List<Post>> getPostsCall;
 
@@ -47,23 +49,21 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
         postsView.setLayoutManager(new LinearLayoutManager(getContext()));
         postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
 
-        final ProgressBar loadingProgress = (ProgressBar) rootView.findViewById(R.id.loadingProgress);
+        loadingProgress = (ProgressBar) rootView.findViewById(R.id.loadingProgress);
 
-        final Button getPosts = (Button) rootView.findViewById(R.id.getPosts);
+        getPosts = (Button) rootView.findViewById(R.id.getPosts);
         getPosts.setOnClickListener(new View.OnClickListener() {
             private static final int NUMBER_OF__POSTS = 15;
 
             @Override
             public void onClick(final View v) {
-                getPosts.setVisibility(View.GONE);
-                loadingProgress.setVisibility(View.VISIBLE);
+                showGetPostsButton(false);
 
                 getPostsCall = App.getUmoriliApi().getRandomPosts(NUMBER_OF__POSTS);
                 getPostsCall.enqueue(new Callback<List<Post>>() {
                     @Override
                     public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
-                        getPosts.setVisibility(View.VISIBLE);
-                        loadingProgress.setVisibility(View.GONE);
+                        showGetPostsButton(true);
 
                         if (!response.isSuccessful()) {
                             return;
@@ -81,8 +81,7 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
 
                     @Override
                     public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
-                        getPosts.setVisibility(View.VISIBLE);
-                        loadingProgress.setVisibility(View.GONE);
+                        showGetPostsButton(true);
 
                         final Snackbar snackbar = Snackbar.make(v, t.getLocalizedMessage(), MESSAGE_SHOW_TIME);
                         snackbar.setAction(R.string.ok, v1 -> snackbar.dismiss());
@@ -126,9 +125,21 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
     public void onPause() {
         super.onPause();
 
-        if(getPostsCall.isExecuted())
-        {
+        if (getPostsCall.isExecuted()) {
             getPostsCall.cancel();
+
+            showGetPostsButton(true);
+        }
+    }
+
+    //TODO надо как-то правильно обозвать метод
+    private void showGetPostsButton(boolean flag) {
+        if (flag) {
+            getPosts.setVisibility(View.VISIBLE);
+            loadingProgress.setVisibility(View.GONE);
+        } else {
+            getPosts.setVisibility(View.GONE);
+            loadingProgress.setVisibility(View.VISIBLE);
         }
     }
 }
