@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Клиент Umori.li</string>
+    <string name="link"><![CDATA[<a href="%s">Оригинал</a>]]></string>
+    <string name="refresh">Обновить</string>
+    <string name="wrong_url">Неправильный адрес: %s</string>
+</resources>

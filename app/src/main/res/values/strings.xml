@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Retrofit2Test</string>
+    <string name="app_name">Umori.li Client</string>
     <string name="ok">OK</string>
-    <string name="get_posts">Get posts</string>
     <string name="link"><![CDATA[<a href="%s">Original</a>]]></string>
     <string name="wrong_url">Wrong url: %s</string>
+    <string name="refresh">Refresh</string>
 </resources>
