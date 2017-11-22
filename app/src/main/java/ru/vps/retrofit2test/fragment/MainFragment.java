@@ -1,7 +1,5 @@
 package ru.vps.retrofit2test.fragment;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,11 +21,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ru.vps.retrofit2test.App;
-import ru.vps.retrofit2test.ClickablePostRecyclerAdapter;
+import ru.vps.retrofit2test.PostsRecyclerAdapter;
 import ru.vps.retrofit2test.R;
 import ru.vps.retrofit2test.model.Post;
 
-public class MainFragment extends Fragment implements ClickablePostRecyclerAdapter.OnItemClickListener {
+public class MainFragment extends Fragment {
     private static final String EXTRA_POSTS = "ru.vps.retrofit2test.extra.posts";
     private static final int MESSAGE_SHOW_TIME = 10000;
     //
@@ -47,7 +45,7 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
         postsView = (RecyclerView) rootView.findViewById(R.id.posts);
         postsView.setHasFixedSize(true);
         postsView.setLayoutManager(new LinearLayoutManager(getContext()));
-        postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
+        postsView.setAdapter(new PostsRecyclerAdapter(posts));
 
         loadingProgress = (ProgressBar) rootView.findViewById(R.id.loadingProgress);
 
@@ -72,10 +70,13 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
                         List<Post> body = response.body();
 
                         if (body != null) {
+                            //TODO возможно настройку ссылок надо перенести на уровень формирования объектов Post из JSON
+                            configuringLinks(body, response);
+
                             posts.clear();
                             posts.addAll(body);
 
-                            postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, MainFragment.this));
+                            postsView.setAdapter(new PostsRecyclerAdapter(posts));
                         }
                     }
 
@@ -86,6 +87,25 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
                         final Snackbar snackbar = Snackbar.make(v, t.getLocalizedMessage(), MESSAGE_SHOW_TIME);
                         snackbar.setAction(R.string.ok, v1 -> snackbar.dismiss());
                         snackbar.show();
+                    }
+
+                    private void configuringLinks(List<Post> posts, Response<List<Post>> response) {
+                        String server = getServerUrl(response);
+                        for (Post post : posts) {
+                            String postLink = post.getLink();
+                            if (postLink != null) {
+                                String postUrl = server + postLink;
+                                post.setLink(postUrl);
+                            }
+                        }
+                    }
+
+                    private String getServerUrl(Response<List<Post>> response) {
+                        okhttp3.Response rawResponse = response.raw();
+                        String url = rawResponse.request().url().toString();
+                        String urlPath = rawResponse.request().url().encodedPath();
+
+                        return url.substring(0, url.indexOf(urlPath));
                     }
                 });
             }
@@ -109,18 +129,7 @@ public class MainFragment extends Fragment implements ClickablePostRecyclerAdapt
             @SuppressWarnings("unchecked")
             List<Post> temp = (List<Post>) savedInstanceState.getSerializable(EXTRA_POSTS);
             posts = temp;
-            postsView.setAdapter(new ClickablePostRecyclerAdapter(posts, this));
-        }
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        Post post = posts.get(position);
-        String link = post.getLink();
-        if (link != null) {
-            String postUrl = App.getUmoriliUrl() + link;
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(postUrl));
-            startActivity(intent);
+            postsView.setAdapter(new PostsRecyclerAdapter(posts));
         }
     }
 

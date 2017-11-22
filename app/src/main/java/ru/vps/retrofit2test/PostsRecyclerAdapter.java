@@ -1,11 +1,14 @@
 package ru.vps.retrofit2test;
 
+import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.TextView;
 
 import java.util.List;
@@ -29,11 +32,20 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
 
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
+        String elementPureHtml = posts.get(position).getElementPureHtml();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml(),
-                                         Html.FROM_HTML_MODE_LEGACY).toString());
+            holder.setPostText(Html.fromHtml(elementPureHtml, Html.FROM_HTML_MODE_LEGACY).toString());
         } else {
-            holder.setText(Html.fromHtml(posts.get(position).getElementPureHtml()).toString());
+            holder.setPostText(Html.fromHtml(elementPureHtml).toString());
+        }
+
+        String postLink = posts.get(position).getLink();
+        if (postLink != null) {
+            holder.setPostLink(postLink);
+            holder.setLinkViewVisibility(View.VISIBLE);
+        } else {
+            holder.setPostLink(null);
+            holder.setLinkViewVisibility(View.GONE);
         }
     }
 
@@ -43,16 +55,43 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdap
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+        private final Context context;
+        private final TextView postText;
+        private final TextView postLink;
 
         public PostViewHolder(View view) {
             super(view);
 
-            textView = (TextView) view.findViewById(R.id.text);
+            context = view.getContext();
+
+            postText = (TextView) view.findViewById(R.id.postText);
+            postLink = (TextView) view.findViewById(R.id.postLink);
         }
 
-        public void setText(String text) {
-            textView.setText(text);
+        public void setPostText(String text) {
+            postText.setText(text);
+        }
+
+        public void setPostLink(String url) {
+            if (URLUtil.isValidUrl(url)) {
+                postLink.setMovementMethod(LinkMovementMethod.getInstance());
+
+                String text = context.getString(R.string.link, url);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    postLink.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+                } else {
+                    postLink.setText(Html.fromHtml(text));
+                }
+            } else {
+                postLink.setMovementMethod(null);
+
+                String text = context.getString(R.string.wrong_url, url);
+                postLink.setText(text);
+            }
+        }
+
+        public void setLinkViewVisibility(int flag) {
+            postLink.setVisibility(flag);
         }
     }
 }
