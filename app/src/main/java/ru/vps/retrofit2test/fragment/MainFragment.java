@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,8 +34,9 @@ public class MainFragment extends Fragment {
     //
     private List<Post> posts = new ArrayList<>();
     //
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView postsView;
-    private ProgressBar loadingProgress;
+    private MenuItem refreshMenuItem;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +53,8 @@ public class MainFragment extends Fragment {
         postsView.setLayoutManager(new LinearLayoutManager(getContext()));
         postsView.setAdapter(new PostsRecyclerAdapter(posts));
 
-        loadingProgress = (ProgressBar) rootView.findViewById(R.id.loadingProgress);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this::getPostsAsync);
 
         return rootView;
     }
@@ -61,13 +63,17 @@ public class MainFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_fragment_main, menu);
+
+        refreshMenuItem = menu.findItem(R.id.menu_refresh);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                doGetPosts();
+                swipeRefreshLayout.setRefreshing(true);
+                refreshMenuItem.setEnabled(false);
+                getPostsAsync();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -91,26 +97,17 @@ public class MainFragment extends Fragment {
             posts = temp;
             postsView.setAdapter(new PostsRecyclerAdapter(posts));
         } else {
-            doGetPosts();
+            getPostsAsync();
         }
     }
 
-    private void showProgressBar(boolean flag) {
-        if (flag) {
-            loadingProgress.setVisibility(View.VISIBLE);
-        } else {
-            loadingProgress.setVisibility(View.GONE);
-        }
-    }
-
-    private void doGetPosts() {
-        showProgressBar(true);
-
+    private void getPostsAsync() {
         Call<List<Post>> getPostsCall = App.getUmoriliApi().getRandomPosts(NUMBER_OF_REQUESTED_POSTS);
         getPostsCall.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
-                showProgressBar(false);
+                swipeRefreshLayout.setRefreshing(false);
+                refreshMenuItem.setEnabled(true);
 
                 if (!response.isSuccessful()) {
                     return;
@@ -131,7 +128,8 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
-                showProgressBar(false);
+                swipeRefreshLayout.setRefreshing(false);
+                refreshMenuItem.setEnabled(true);
 
                 final Snackbar snackbar = Snackbar.make(postsView, t.getLocalizedMessage(), MESSAGE_SHOW_TIME);
                 snackbar.setAction(R.string.ok, view -> snackbar.dismiss());
