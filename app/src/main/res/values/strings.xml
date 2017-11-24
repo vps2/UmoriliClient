@@ -4,4 +4,5 @@
     <string name="link"><![CDATA[<a href="%s">Original</a>]]></string>
     <string name="wrong_url">Wrong url: %s</string>
     <string name="refresh">Refresh</string>
+    <string name="error">Error:</string>
 </resources>

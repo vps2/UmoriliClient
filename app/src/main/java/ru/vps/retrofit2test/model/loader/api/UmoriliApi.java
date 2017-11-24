@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.api;
+package ru.vps.retrofit2test.model.loader.api;
 
 
 import java.util.List;

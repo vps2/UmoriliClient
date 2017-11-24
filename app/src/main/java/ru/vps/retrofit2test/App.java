@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import ru.vps.retrofit2test.api.UmoriliApi;
+import ru.vps.retrofit2test.model.loader.api.UmoriliApi;
 
 public class App extends Application {
     private static UmoriliApi umoriliApi;
