@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test;
+package ru.vps.umorili_client;
 
 import android.content.Context;
 import android.os.Build;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.vps.retrofit2test.model.Post;
+import ru.vps.umorili_client.model.Post;
 
 public class PostsRecyclerAdapter extends RecyclerView.Adapter<PostsRecyclerAdapter.PostViewHolder> {
     private List<Post> posts;

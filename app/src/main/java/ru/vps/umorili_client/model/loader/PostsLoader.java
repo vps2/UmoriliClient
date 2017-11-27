@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.model.loader;
+package ru.vps.umorili_client.model.loader;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,11 +10,11 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import ru.vps.retrofit2test.App;
-import ru.vps.retrofit2test.model.Post;
-import ru.vps.retrofit2test.model.loader.result.ErrorResult;
-import ru.vps.retrofit2test.model.loader.result.GoodResult;
-import ru.vps.retrofit2test.model.loader.result.Result;
+import ru.vps.umorili_client.App;
+import ru.vps.umorili_client.model.Post;
+import ru.vps.umorili_client.model.loader.result.ErrorResult;
+import ru.vps.umorili_client.model.loader.result.GoodResult;
+import ru.vps.umorili_client.model.loader.result.Result;
 
 public class PostsLoader extends Loader<Result<List<Post>>> {
     private static final int NUMBER_OF_REQUESTED_POSTS = 30;

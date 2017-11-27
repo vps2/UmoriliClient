@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test;
+package ru.vps.umorili_client;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("ru.vps.retrofit2test", appContext.getPackageName());
+        assertEquals("ru.vps.umorili-client", appContext.getPackageName());
     }
 }

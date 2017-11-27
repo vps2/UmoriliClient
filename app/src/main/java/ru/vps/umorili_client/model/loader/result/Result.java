@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.model.loader.result;
+package ru.vps.umorili_client.model.loader.result;
 
 public abstract class Result<T> {
     private boolean used;

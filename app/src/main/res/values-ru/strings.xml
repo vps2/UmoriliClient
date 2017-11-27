@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Клиент Umori.li</string>
+    <string name="about">О программе...</string>
+    <string name="ok">ОК</string>
     <string name="link"><![CDATA[<a href="%s">Оригинал</a>]]></string>
     <string name="refresh">Обновить</string>
     <string name="wrong_url">Неправильный адрес: %s</string>
     <string name="error">Ошибка:</string>
+    <string name="about_text">
+        <![CDATA[<h3>%s версия: %s</h3>
+                 <p>Программа для просмотра постов с сайта <a href="http://www.umori.li">www.umorili.li</a>.
+                 <br/>Создана в учебных целях.<p>
+                 <br/>
+                 <h4>Сторонние библиотеки:</h4>
+                 Retrofit 2.3.0<br/>
+                 Gson 2.7<br/>
+                 okHttp 3.8.0
+        ]]>
+    </string>
 </resources>

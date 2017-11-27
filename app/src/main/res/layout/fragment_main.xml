@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ru.vps.retrofit2test.fragment.MainFragment">
+    tools:context="ru.vps.umorili_client.fragment.MainFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"

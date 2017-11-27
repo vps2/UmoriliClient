@@ -1,12 +1,11 @@
-package ru.vps.retrofit2test.model.loader.api;
-
+package ru.vps.umorili_client.model.loader.api;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import ru.vps.retrofit2test.model.Post;
+import ru.vps.umorili_client.model.Post;
 
 public interface UmoriliApi {
     @GET("/api/random")

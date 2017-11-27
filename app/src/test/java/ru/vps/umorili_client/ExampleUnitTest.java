@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test;
+package ru.vps.umorili_client;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.fragment;
+package ru.vps.umorili_client.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,17 +20,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.vps.retrofit2test.PostsRecyclerAdapter;
-import ru.vps.retrofit2test.R;
-import ru.vps.retrofit2test.model.Post;
-import ru.vps.retrofit2test.model.loader.PostsLoader;
-import ru.vps.retrofit2test.model.loader.result.Result;
+import ru.vps.umorili_client.R;
+import ru.vps.umorili_client.PostsRecyclerAdapter;
+import ru.vps.umorili_client.model.Post;
+import ru.vps.umorili_client.model.loader.PostsLoader;
+import ru.vps.umorili_client.model.loader.result.Result;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Result<List<Post>>> {
     private static final int POSTS_LOADER_ID = 1;
     private static final int MESSAGE_SHOW_TIME = 10000;
-    private static final String EXTRA_LOADING = "ru.vps.retrofit2test.fragment.main_fragment.loading";
-    private static final String EXTRA_CACHED_POSTS = "ru.vps.retrofit2test.fragment.main_fragment.cached_posts";
+    private static final String EXTRA_LOADING = "ru.vps.umorili_client.fragment.main_fragment.loading";
+    private static final String EXTRA_CACHED_POSTS = "ru.vps.umorili_client.fragment.main_fragment.cached_posts";
     //
     private RecyclerView postsView;
     private SwipeRefreshLayout swipeRefreshLayout;

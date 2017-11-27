@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.model.loader.result;
+package ru.vps.umorili_client.model.loader.result;
 
 public class ErrorResult<T> extends Result<T> {
     private final Throwable throwable;

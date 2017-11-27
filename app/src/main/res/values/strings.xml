@@ -1,8 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Umori.li Client</string>
+    <string name="about">About...</string>
     <string name="ok">OK</string>
     <string name="link"><![CDATA[<a href="%s">Original</a>]]></string>
-    <string name="wrong_url">Wrong url: %s</string>
     <string name="refresh">Refresh</string>
+    <string name="wrong_url">Wrong url: %s</string>
     <string name="error">Error:</string>
+    <string name="about_text">
+        <![CDATA[<h3>%s version: %s</h3>
+                 <p>Program for viewing posts from the site <a href="http://www.umori.li">www.umorili.li</a>.
+                 <br/>Created for education purposes.<p>
+                 <br/>
+                 <h4>Third-party libraries:</h4>
+                 Retrofit 2.3.0<br/>
+                 Gson 2.7<br/>
+                 okHttp 3.8.0
+        ]]>
+    </string>
 </resources>

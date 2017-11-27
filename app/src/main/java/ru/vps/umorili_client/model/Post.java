@@ -1,4 +1,4 @@
-package ru.vps.retrofit2test.model;
+package ru.vps.umorili_client.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
