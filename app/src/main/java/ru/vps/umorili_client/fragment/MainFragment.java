@@ -18,17 +18,18 @@ import android.view.ViewGroup;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import ru.vps.umorili_client.R;
 import ru.vps.umorili_client.PostsRecyclerAdapter;
+import ru.vps.umorili_client.R;
 import ru.vps.umorili_client.model.Post;
 import ru.vps.umorili_client.model.loader.PostsLoader;
 import ru.vps.umorili_client.model.loader.result.Result;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Result<List<Post>>> {
     private static final int POSTS_LOADER_ID = 1;
-    private static final int MESSAGE_SHOW_TIME = 10000;
+    private static final int ERROR_SHOW_TIME = 10000;
     private static final String EXTRA_LOADING = "ru.vps.umorili_client.fragment.main_fragment.loading";
     private static final String EXTRA_CACHED_POSTS = "ru.vps.umorili_client.fragment.main_fragment.cached_posts";
     //
@@ -36,8 +37,16 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private SwipeRefreshLayout swipeRefreshLayout;
     //
     private List<Post> cachedPosts;
+    private PostsRecyclerAdapter postsRecyclerAdapter;
     private Loader<Result<List<Post>>> postsLoader;
-    private boolean loading = true;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        cachedPosts = new ArrayList<>();
+        postsRecyclerAdapter = new PostsRecyclerAdapter(cachedPosts);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +55,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         postsView = (RecyclerView) rootView.findViewById(R.id.posts);
         postsView.setHasFixedSize(true);
         postsView.setLayoutManager(new LinearLayoutManager(getContext()));
-        postsView.setAdapter(new PostsRecyclerAdapter(new ArrayList<>()));
+        postsView.setAdapter(postsRecyclerAdapter);
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(this::getPostsAsync);
@@ -67,13 +76,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            loading = savedInstanceState.getBoolean(EXTRA_LOADING);
-            cachedPosts = (List<Post>) savedInstanceState.getSerializable(EXTRA_CACHED_POSTS);
-        }
-
-        if (loading) {
+        if (savedInstanceState == null) {
             swipeRefreshLayout.setRefreshing(true);
+        } else {
+            @SuppressWarnings("unchecked")
+            List<Post> savedPosts = (List<Post>) savedInstanceState.getSerializable(EXTRA_CACHED_POSTS);
+            updatePostsView(savedPosts);
+
+            boolean isSwipeRefreshing = savedInstanceState.getBoolean(EXTRA_LOADING);
+            swipeRefreshLayout.setRefreshing(isSwipeRefreshing);
         }
     }
 
@@ -81,7 +92,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(EXTRA_LOADING, loading);
+        outState.putBoolean(EXTRA_LOADING, swipeRefreshLayout.isRefreshing());
         outState.putSerializable(EXTRA_CACHED_POSTS, (Serializable) cachedPosts);
     }
 
@@ -120,39 +131,41 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             return;
         }
 
-        PostsRecyclerAdapter postsRecyclerAdapter = null;
+        if (data.isUsed()) {
+            return;
+        }
 
-        if (!data.isUsed()) {
-            loading = false;
-            swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setRefreshing(false);
 
-            try {
-                List<Post> temp = data.get();
-                cachedPosts = temp;
-                postsRecyclerAdapter = new PostsRecyclerAdapter(cachedPosts);
-                postsView.setAdapter(postsRecyclerAdapter);
-            } catch (Throwable ex) {
-                String message = getString(R.string.error) + " " + ex.getLocalizedMessage();
-                Snackbar snackbar = Snackbar.make(postsView, message, MESSAGE_SHOW_TIME);
-                snackbar.setAction(R.string.ok, view -> snackbar.dismiss());
-                snackbar.show();
-            }
-        } else {
-            postsRecyclerAdapter = new PostsRecyclerAdapter(cachedPosts);
-            postsView.setAdapter(postsRecyclerAdapter);
+        try {
+            updatePostsView(data.get());
+        } catch (Throwable ex) {
+            showError(ex.getLocalizedMessage());
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Result<List<Post>>> loader) {
         if (loader.getId() == POSTS_LOADER_ID) {
-            cachedPosts.clear();
-            cachedPosts = null;
+            updatePostsView(Collections.emptyList());
         }
     }
 
     private void getPostsAsync() {
-        loading = true;
         postsLoader.forceLoad();
+    }
+
+    private void updatePostsView(List<Post> posts) {
+        cachedPosts.clear();
+        cachedPosts.addAll(posts);
+
+        postsRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    private void showError(String errorText) {
+        String message = getString(R.string.error) + " " + errorText;
+        Snackbar snackbar = Snackbar.make(postsView, message, ERROR_SHOW_TIME);
+        snackbar.setAction(R.string.ok, view -> snackbar.dismiss());
+        snackbar.show();
     }
 }
