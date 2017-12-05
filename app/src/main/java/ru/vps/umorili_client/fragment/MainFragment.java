@@ -39,13 +39,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private List<Post> cachedPosts;
     private PostsRecyclerAdapter postsRecyclerAdapter;
     private Loader<Result<List<Post>>> postsLoader;
+    private boolean isPostsLoading;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         cachedPosts = new ArrayList<>();
         postsRecyclerAdapter = new PostsRecyclerAdapter(cachedPosts);
+
+        isPostsLoading = true;
+
+        postsLoader = getLoaderManager().initLoader(POSTS_LOADER_ID, Bundle.EMPTY, this);
     }
 
     @Override
@@ -64,35 +71,25 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        setHasOptionsMenu(true);
-
-        postsLoader = getLoaderManager().initLoader(POSTS_LOADER_ID, Bundle.EMPTY, this);
-    }
-
-    @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            swipeRefreshLayout.setRefreshing(true);
-        } else {
+        if (savedInstanceState != null) {
             @SuppressWarnings("unchecked")
             List<Post> savedPosts = (List<Post>) savedInstanceState.getSerializable(EXTRA_CACHED_POSTS);
             updatePostsView(savedPosts);
 
-            boolean isSwipeRefreshing = savedInstanceState.getBoolean(EXTRA_LOADING);
-            swipeRefreshLayout.setRefreshing(isSwipeRefreshing);
+            isPostsLoading = savedInstanceState.getBoolean(EXTRA_LOADING);
         }
+
+        swipeRefreshLayout.setRefreshing(isPostsLoading);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean(EXTRA_LOADING, swipeRefreshLayout.isRefreshing());
+        outState.putBoolean(EXTRA_LOADING, isPostsLoading);
         outState.putSerializable(EXTRA_CACHED_POSTS, (Serializable) cachedPosts);
     }
 
@@ -106,7 +103,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                if (!swipeRefreshLayout.isRefreshing()) {
+                if (!isPostsLoading) {
                     swipeRefreshLayout.setRefreshing(true);
                     getPostsAsync();
                 }
@@ -131,16 +128,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             return;
         }
 
-        if (data.isUsed()) {
-            return;
-        }
+        if (!data.isUsed()) {
+            isPostsLoading = false;
+            swipeRefreshLayout.setRefreshing(false);
 
-        swipeRefreshLayout.setRefreshing(false);
-
-        try {
-            updatePostsView(data.get());
-        } catch (Throwable ex) {
-            showError(ex.getLocalizedMessage());
+            updatePostsViewOrShowError(data);
         }
     }
 
@@ -152,7 +144,17 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void getPostsAsync() {
+        isPostsLoading = true;
+
         postsLoader.forceLoad();
+    }
+
+    private void updatePostsViewOrShowError(Result<List<Post>> data) {
+        try {
+            updatePostsView(data.get());
+        } catch (Throwable ex) {
+            showError(ex.getLocalizedMessage());
+        }
     }
 
     private void updatePostsView(List<Post> posts) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.Loader;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -19,7 +18,7 @@ import ru.vps.umorili_client.model.loader.result.Result;
 public class PostsLoader extends Loader<Result<List<Post>>> {
     private static final int NUMBER_OF_REQUESTED_POSTS = 30;
     //
-    private List<Post> posts = new ArrayList<>();
+    private Result<List<Post>> lastResult;
     private Call<List<Post>> call;
 
     public PostsLoader(Context context) {
@@ -30,10 +29,10 @@ public class PostsLoader extends Loader<Result<List<Post>>> {
     protected void onStartLoading() {
         super.onStartLoading();
 
-        if (posts.isEmpty()) {
+        if (lastResult == null) {
             forceLoad();
         } else {
-            deliverResult(new GoodResult<>(posts));
+            deliverResult(lastResult);
         }
     }
 
@@ -48,25 +47,25 @@ public class PostsLoader extends Loader<Result<List<Post>>> {
             @Override
             public void onResponse(@NonNull Call<List<Post>> call, @NonNull Response<List<Post>> response) {
                 if (!response.isSuccessful()) {
-                    deliverResult(new ErrorResult<>(new RuntimeException(response.message())));
+                    lastResult = new ErrorResult<>(new RuntimeException(response.message()));
+                    deliverResult(lastResult);
                 }
 
                 List<Post> body = response.body();
-
                 if (body != null) {
                     //TODO возможно настройку ссылок надо перенести на уровень формирования объектов Post из JSON
                     configuringLinks(body, response);
 
-                    posts.clear();
-                    posts.addAll(body);
+                    lastResult = new GoodResult<>(body);
 
-                    deliverResult(new GoodResult<>(posts));
+                    deliverResult(lastResult);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Post>> call, @NonNull Throwable t) {
-                deliverResult(new ErrorResult<>(t));
+                lastResult = new ErrorResult<>(t);
+                deliverResult(lastResult);
             }
         });
     }
